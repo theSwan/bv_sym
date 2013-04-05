@@ -29,7 +29,7 @@ int main(int argc, char *args[]) /*n t q d*/
 	fmpz_poly_init(s->sknode);
 	fmpz_poly_set_coeff_si(s->sknode, 0, 1);
         output = fmpz_poly_get_str(s->sknode);
-        printf("\"%s\" ",output);
+        printf("%s\n",output);
 
 	long dn = fmpz_get_ui(params->d);
 	long i;
@@ -41,12 +41,11 @@ int main(int argc, char *args[]) /*n t q d*/
                 fmpz_poly_scalar_smod_fmpz(r->sknode, r->sknode, params->q);
                 
                 output = fmpz_poly_get_str(r->sknode);
-                printf("\"%s\" ",output);
+                printf("%s\n",output);
                 
 		s->next = r;
 		s = r;
 	}
-        printf("\n");
 	s->next = NULL;
         fmpz_poly_clear(fx);
         fmpz_poly_clear(sk);

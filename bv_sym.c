@@ -79,39 +79,36 @@ bv_sym_ct *bv_sym_ctadd(bv_sym_ct *ct, fmpz_poly_t fp)
 	return ct;
 }
 
-void hcrypt_random(mpz_t r, int len)
+void hcrypt_random(fmpz_t r)
 {
+	mpz_t tmp;
 	FILE *fp;
-	int flag = 0;
+	mpz_init(tmp);
 	fp = fopen("/dev/urandom", "rb");
+        int len = 9;
 	if (fp) {
-		int bytecount, leftover;
 		unsigned char *bytes;
-		bytecount = (len + 7) / 8;
-		leftover = len % 8;
-		bytes = (unsigned char *) malloc(bytecount);
-
-		if (fread(bytes, 1, bytecount, fp)) {
-			if (leftover) {
-				*bytes = *bytes % (1 << leftover);
-			}
-			mpz_import(r, bytecount, 1, 1, 0, 0, bytes);
-			flag = 1;
-		}
+		bytes = (unsigned char *) malloc (len);
+                
+                if (fread(bytes, 1, len, fp)) {
+                        mpz_import(tmp, len, 1, 1, 0, 0, bytes);
+                }
+                
+                else {
+                        printf("file read error\n");
+                }
+                
 		fclose(fp);
 		free(bytes);
 	}
-	if(!fp || !flag) {
-		gmp_randstate_t gmpRandState;
-		gmp_randinit_default(gmpRandState);
-		gmp_randseed_ui(gmpRandState, (unsigned long)time(0)+(chrnd++));
-		while( 1 ) {
-			mpz_urandomb(r, gmpRandState, len);
-			if( mpz_sizeinbase(r, 2) == len)
-				break;
-		}
-		gmp_randclear(gmpRandState);
-	}
+        
+        else {
+                printf("random number generation error\n");
+        }
+	
+        
+	fmpz_set_mpz(r, tmp);
+	mpz_clear(tmp);
 }
 
 fmpz *bv_sym_samplez(fmpz *vec, long n)
@@ -123,11 +120,10 @@ fmpz *bv_sym_samplez(fmpz *vec, long n)
 	long b = (long)floor(+10*tdvn);
 	long x, i;
 	double p;
-	int len = sizeof(unsigned long int);
-	mpz_t randseed;
-	mpz_init(randseed);
-	hcrypt_random(randseed, len);
-	unsigned long int useed = mpz_get_ui(randseed);
+	fmpz_t randseed;
+	fmpz_init(randseed);
+	hcrypt_random(randseed);
+	unsigned long int useed = fmpz_get_ui(randseed);
 	srand(useed);
 	for( i = 0 ; i < n ; i++) {
 		do {
@@ -137,7 +133,7 @@ fmpz *bv_sym_samplez(fmpz *vec, long n)
 
 		vec[i] = x;
 	}
-	mpz_clear(randseed);
+	fmpz_clear(randseed);
 	return vec;
 }
 
@@ -153,11 +149,10 @@ void bv_sym_guassian_poly(fmpz *c, fmpz_poly_t poly, long n)
 void bv_sym_unif_poly(fmpz_poly_t poly, long n, fmpz_t q)
 {
 	int i;
-	int len = sizeof(unsigned long int);
-	mpz_t randseed;
-	mpz_init(randseed);
-	hcrypt_random(randseed, len);
-	unsigned long int useed = mpz_get_ui(randseed);
+	fmpz_t randseed;
+	fmpz_init(randseed);
+	hcrypt_random(randseed);
+	unsigned long int useed = fmpz_get_ui(randseed);
 	mpz_t rndnum,rndbd;
 	fmpz_t rndfmpz;
 	gmp_randstate_t gmpstate;
@@ -176,7 +171,7 @@ void bv_sym_unif_poly(fmpz_poly_t poly, long n, fmpz_t q)
 	}
         fmpz_poly_scalar_smod_fmpz(poly, poly, q);
 
-	mpz_clear(randseed);
+	fmpz_clear(randseed);
 	fmpz_clear(rndfmpz);
 	gmp_randclear(gmpstate);
 	mpz_clear(rndnum);

@@ -7,7 +7,9 @@
 #include "flint/fmpz_poly.h"
 #include <libsym.h>
 
-int main(int argc, char *args[])/* n t q d sk m*/
+char str[100000];
+
+int main(int argc, char *args[])/* n t q d m sk.txt*/
 {
         bv_sym_context_t *params;
         params = bv_sym_init(params, args[1], args[2], args[3], args[4], 10);
@@ -17,10 +19,24 @@ int main(int argc, char *args[])/* n t q d sk m*/
         fmpz_poly_init(fx);
         fmpz_poly_set_coeff_ui(fx, 0, 1);
         fmpz_poly_set_coeff_ui(fx, n, 1);
-        fmpz_poly_init(sk);
-        fmpz_poly_set_str(sk, args[5]);
+        
         fmpz_poly_init(m);
-        fmpz_poly_set_str(m, args[6]);
+        fmpz_poly_set_str(m, args[5]);
+        
+        fmpz_poly_init(sk);
+        FILE *fp;
+        
+        if((fp = fopen(args[6], "r")) == NULL)
+        {
+                printf("file read error\n");
+                exit(0);
+        }
+        fgets(str, 100, fp);
+        fgets(str, 100000, fp);
+        fmpz_poly_set_str(sk, str);
+        
+        fclose(fp);
+        
         fmpz *ctr;
         ctr = _fmpz_vec_init(n);
 	fmpz_poly_t e, a, b;
@@ -41,7 +57,8 @@ int main(int argc, char *args[])/* n t q d sk m*/
 	fmpz_poly_neg(sk2, a);
 	char *s1 = fmpz_poly_get_str(sk1);
         char *s2 = fmpz_poly_get_str(sk2);
-        printf("\"%s\" \"%s\"\n", s1, s2);
+        printf("2\n");
+        printf("%s\n%s", s1, s2);
       
         fmpz_poly_clear(sk);
         fmpz_poly_clear(m);
