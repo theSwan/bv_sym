@@ -39,7 +39,7 @@ bv_sym_ct *bv_sym_ctinit(bv_sym_ct *ct);
 bv_sym_ct *bv_sym_ctsetlen(bv_sym_ct *ct, int nlen);
 int bv_sym_ctgetlen(bv_sym_ct *ct);
 bv_sym_ct *bv_sym_ctadd(bv_sym_ct *ct, fmpz_poly_t fp);
-void hcrypt_random(fmpz_t r);
+void hcrypt_random(mpz_t r);
 fmpz *bv_sym_samplez(fmpz *vec, long n);
 void bv_sym_guassian_poly(fmpz *c, fmpz_poly_t poly, long n);
 void bv_sym_unif_poly(fmpz_poly_t poly, long n, fmpz_t q);
